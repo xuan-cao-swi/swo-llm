@@ -1,0 +1,31 @@
+# RubyGems build artifacts
+/pkg/
+/*.gem
+/*.gem.*    # partials, signatures
+
+# Bundler
+/.bundle
+/vendor/bundle/
+/vendor/cache/
+
+# Documentation / coverage
+/.yardoc
+/yardoc/
+/coverage/
+
+# Common Ruby / Rails
+/log/*
+/tmp/*
+.byebug_history
+
+# Environment and editor
+.env
+.env.*
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
+
+# Other
+prompt
