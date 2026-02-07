@@ -6,13 +6,13 @@
 
 require 'test_helper'
 
-require_relative '../../../../lib/swo/llm/claude/opentelemetry/instrumentation'
+require_relative '../../../../lib/swo/llm/anthropic/opentelemetry/instrumentation'
 
-describe OpenTelemetry::Instrumentation::Claude do
-  let(:instrumentation) { OpenTelemetry::Instrumentation::Claude::Instrumentation.instance }
+describe OpenTelemetry::Instrumentation::Anthropic do
+  let(:instrumentation) { OpenTelemetry::Instrumentation::Anthropic::Instrumentation.instance }
 
   it 'has #name' do
-    _(instrumentation.name).must_equal 'OpenTelemetry::Instrumentation::Claude'
+    _(instrumentation.name).must_equal 'OpenTelemetry::Instrumentation::Anthropic'
   end
 
   it 'has #version' do

@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["xuan-cao-swi"]
   spec.email = ["xuan.cao@solarwinds.com"]
 
-  spec.summary = "OpenTelemetry instrumentation for LLM providers (OpenAI, Langchain, Gemini, Claude)"
-  spec.description = "Provides automatic OpenTelemetry instrumentation for popular Large Language Model APIs and frameworks including OpenAI, Langchain.rb, Google Gemini, and Anthropic Claude."
+  spec.summary = "OpenTelemetry instrumentation for LLM providers (OpenAI, Langchain, Gemini, Anthropic)"
+  spec.description = "Provides automatic OpenTelemetry instrumentation for popular Large Language Model APIs and frameworks including OpenAI, Langchain.rb, Google Gemini, and Anthropic."
   spec.homepage = "https://github.com/solarwinds/swo-llm"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.1.0"

@@ -8,8 +8,8 @@ require 'test_helper'
 require 'webmock/minitest'
 require 'json'
 
-require_relative '../../../../../lib/swo/llm/claude/opentelemetry/instrumentation'
-require_relative '../../../../../lib/swo/llm/claude/opentelemetry/instrumentation/claude/patches/client'
+require_relative '../../../../../lib/swo/llm/anthropic/opentelemetry/instrumentation'
+require_relative '../../../../../lib/swo/llm/anthropic/opentelemetry/instrumentation/anthropic/patches/client'
 
 # Mock Anthropic module and classes for testing without the actual gem
 module Anthropic
@@ -106,8 +106,8 @@ module Anthropic
   end
 end
 
-describe OpenTelemetry::Instrumentation::Claude::Patches::Client do
-  let(:instrumentation) { OpenTelemetry::Instrumentation::Claude::Instrumentation.instance }
+describe OpenTelemetry::Instrumentation::Anthropic::Patches::Client do
+  let(:instrumentation) { OpenTelemetry::Instrumentation::Anthropic::Instrumentation.instance }
   let(:exporter) { EXPORTER }
   let(:spans) { exporter.finished_spans }
   let(:client_span) { spans.first }
@@ -115,8 +115,8 @@ describe OpenTelemetry::Instrumentation::Claude::Patches::Client do
   before do
     exporter.reset
     # Apply the patch to our mock client
-    unless Anthropic::Client.ancestors.include?(OpenTelemetry::Instrumentation::Claude::Patches::Client)
-      Anthropic::Client.prepend(OpenTelemetry::Instrumentation::Claude::Patches::Client)
+    unless Anthropic::Client.ancestors.include?(OpenTelemetry::Instrumentation::Anthropic::Patches::Client)
+      Anthropic::Client.prepend(OpenTelemetry::Instrumentation::Anthropic::Patches::Client)
     end
     instrumentation.instance_variable_set(:@installed, true)
   end
@@ -127,7 +127,7 @@ describe OpenTelemetry::Instrumentation::Claude::Patches::Client do
 
   describe 'messages.create' do
     let(:model) { 'claude-3-opus-20240229' }
-    let(:messages) { [{ role: 'user', content: 'Hello, Claude!' }] }
+    let(:messages) { [{ role: 'user', content: 'Hello!' }] }
     let(:response_body) do
       {
         id: 'msg_123abc',
@@ -220,7 +220,7 @@ describe OpenTelemetry::Instrumentation::Claude::Patches::Client do
       logged_message = logger_output.string
 
       _(logged_message).must_include 'gen_ai.user.message'
-      _(logged_message).must_include 'Hello, Claude!'
+      _(logged_message).must_include 'Hello!'
       _(logged_message).must_include 'gen_ai.assistant.message'
       _(logged_message).must_include 'Hello! How can I assist you today?'
       _(logged_message).must_include 'anthropic'

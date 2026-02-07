@@ -10,7 +10,7 @@ require_relative 'utils'
 
 module OpenTelemetry
   module Instrumentation
-    module Claude
+    module Anthropic
       module Patches
         # Anthropic Client Patch
         # Instruments the Anthropic::Client#request method to capture telemetry data
@@ -59,11 +59,11 @@ module OpenTelemetry
           private
 
           def tracer
-            Claude::Instrumentation.instance.tracer
+            Anthropic::Instrumentation.instance.tracer
           end
 
           def config
-            Claude::Instrumentation.instance.config
+            Anthropic::Instrumentation.instance.config
           end
 
           def extract_model(req)
