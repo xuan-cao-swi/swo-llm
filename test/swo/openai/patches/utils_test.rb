@@ -7,7 +7,7 @@
 require 'test_helper'
 require 'json'
 
-require_relative '../../../../../lib/opentelemetry/instrumentation/openai/patches/utils'
+require_relative '../../../../lib/swo/llm/openai/opentelemetry/instrumentation/openai/patches/utils'
 
 describe OpenTelemetry::Instrumentation::OpenAI::Patches::Utils do
   let(:utils_class) do

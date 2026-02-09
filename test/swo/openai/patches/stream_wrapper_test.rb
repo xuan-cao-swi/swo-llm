@@ -6,8 +6,8 @@
 
 require 'test_helper'
 
-require_relative '../../../../../lib/opentelemetry/instrumentation/openai'
-require_relative '../../../../../lib/opentelemetry/instrumentation/openai/patches/stream_wrapper'
+require_relative '../../../../lib/swo/llm/openai/opentelemetry/instrumentation/openai'
+require_relative '../../../../lib/swo/llm/openai/opentelemetry/instrumentation/openai/patches/stream_wrapper'
 
 describe OpenTelemetry::Instrumentation::OpenAI::Patches::StreamWrapper do
   let(:instrumentation) { OpenTelemetry::Instrumentation::OpenAI::Instrumentation.instance }

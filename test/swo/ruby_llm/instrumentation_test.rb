@@ -6,7 +6,7 @@
 
 require 'test_helper'
 
-require_relative '../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation'
+require_relative '../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation/ruby_llm'
 
 describe OpenTelemetry::Instrumentation::RubyLLM do
   let(:instrumentation) { OpenTelemetry::Instrumentation::RubyLLM::Instrumentation.instance }
@@ -31,11 +31,19 @@ describe OpenTelemetry::Instrumentation::RubyLLM do
   end
 
   describe 'configuration options' do
+    before do
+      # Reset the instrumentation singleton's config to defaults
+      instrumentation.instance_variable_set(:@config, nil)
+      instrumentation.instance_variable_set(:@installed, false)
+    end
+
     it 'has capture_content option defaulting to false' do
+      instrumentation.install({})
       _(instrumentation.config[:capture_content]).must_equal false
     end
 
     it 'has allowed_operation option with default values' do
+      instrumentation.install({})
       _(instrumentation.config[:allowed_operation]).must_include 'chat'
       _(instrumentation.config[:allowed_operation]).must_include 'embeddings'
     end

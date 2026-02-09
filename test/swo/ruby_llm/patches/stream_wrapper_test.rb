@@ -6,8 +6,8 @@
 
 require 'test_helper'
 
-require_relative '../../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation'
-require_relative '../../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation/ruby_llm/patches/stream_wrapper'
+require_relative '../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation/ruby_llm'
+require_relative '../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation/ruby_llm/patches/stream_wrapper'
 
 describe OpenTelemetry::Instrumentation::RubyLLM::Patches::StreamWrapper do
   let(:wrapper_class) { OpenTelemetry::Instrumentation::RubyLLM::Patches::StreamWrapper }

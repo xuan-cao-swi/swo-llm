@@ -211,7 +211,15 @@ module OpenTelemetry
               when 'tool_use'
                 body[:id] = @id if @id
                 body[:name] = @name if @name
-                body[:input] = @input_content.join if @input_content.any?
+                # Parse the JSON string to avoid double-escaping when logged
+                if @input_content.any?
+                  input_str = @input_content.join
+                  begin
+                    body[:input] = JSON.parse(input_str)
+                  rescue JSON::ParserError
+                    body[:input] = input_str
+                  end
+                end
               end
 
               {

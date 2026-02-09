@@ -191,34 +191,39 @@ module OpenTelemetry
           def handle_response(span, result, req)
             return unless span.recording?
 
-            # Set basic response attributes (only for non-streaming responses with these methods)
+            # Set basic response attributes (works for both Hash and object responses)
             response_attributes = {
-              'gen_ai.response.model' => result.respond_to?(:model) ? result.model : nil,
-              'gen_ai.response.id' => result.respond_to?(:id) ? result.id : nil,
-              'openai.response.service_tier' => result.respond_to?(:service_tier) ? result.service_tier&.to_s : nil,
-              'openai.response.system_fingerprint' => result.respond_to?(:system_fingerprint) ? result.system_fingerprint : nil
+              'gen_ai.response.model' => get_property_value(result, :model),
+              'gen_ai.response.id' => get_property_value(result, :id),
+              'openai.response.service_tier' => get_property_value(result, :service_tier)&.to_s,
+              'openai.response.system_fingerprint' => get_property_value(result, :system_fingerprint)
             }.compact
             span.add_attributes(response_attributes)
 
             # Handle usage/token information
-            set_usage_attributes(span, result.usage) if result.respond_to?(:usage) && result.usage
+            usage = get_property_value(result, :usage)
+            set_usage_attributes(span, usage) if usage
 
             # Handle different completion responses
-            if result.respond_to?(:choices) && result.choices&.any?
+            choices = get_property_value(result, :choices)
+            data = get_property_value(result, :data)
+            if choices&.any?
               handle_chat_completion_response(span, result)
-            elsif result.respond_to?(:data) && result.data&.any?
-              handle_embeddings_response(span, result) if result.data.first.respond_to?(:embedding)
+            elsif data&.any?
+              first_data = data.first
+              handle_embeddings_response(span, result) if get_property_value(first_data, :embedding)
             end
           end
 
           # Handle chat completion response
           def handle_chat_completion_response(span, result)
-            finish_reasons = result.choices.map { |x| x.finish_reason.to_s }
+            choices = get_property_value(result, :choices)
+            finish_reasons = choices.map { |x| get_property_value(x, :finish_reason).to_s }
             span.set_attribute('gen_ai.response.finish_reasons', finish_reasons) if finish_reasons.any?
 
             return unless config[:capture_content]
 
-            result.choices.each do |choice|
+            choices.each do |choice|
               event = choice_to_log_event(choice, capture_content: true)
               log_structured_event(event)
             end
@@ -226,7 +231,10 @@ module OpenTelemetry
 
           # Handle embeddings response
           def handle_embeddings_response(span, result)
-            embedding_dimensions = result.data.first.respond_to?(:embedding) ? result.data.first.embedding&.size : nil
+            data = get_property_value(result, :data)
+            first_data = data&.first
+            embedding = get_property_value(first_data, :embedding)
+            embedding_dimensions = embedding&.size
 
             attributes = {
               'gen_ai.embeddings.dimension.count' => embedding_dimensions
@@ -238,9 +246,9 @@ module OpenTelemetry
           # Set token usage attributes
           def set_usage_attributes(span, usage)
             usage_attributes = {
-              'gen_ai.usage.input_tokens' => usage.respond_to?(:prompt_tokens) ? usage.prompt_tokens : nil,
-              'gen_ai.usage.output_tokens' => usage.respond_to?(:completion_tokens) ? usage.completion_tokens : nil,
-              'gen_ai.usage.total_tokens' => usage.respond_to?(:total_tokens) ? usage.total_tokens : nil
+              'gen_ai.usage.input_tokens' => get_property_value(usage, :prompt_tokens),
+              'gen_ai.usage.output_tokens' => get_property_value(usage, :completion_tokens),
+              'gen_ai.usage.total_tokens' => get_property_value(usage, :total_tokens)
             }.compact
 
             span.add_attributes(usage_attributes)

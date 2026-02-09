@@ -24,3 +24,9 @@ gem "simplecov", "~> 0.22", require: false
 
 # Debugging
 gem "debug", "~> 1.7"
+
+# AI dependencies
+gem 'langchainrb'
+gem 'ruby-openai'  # langchainrb depends on this for OpenAI support
+gem 'ruby_llm'
+gem 'anthropic'  # official Anthropic SDK

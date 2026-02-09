@@ -7,8 +7,8 @@
 require 'test_helper'
 require 'json'
 
-require_relative '../../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation'
-require_relative '../../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation/ruby_llm/patches/embedding'
+require_relative '../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation/ruby_llm'
+require_relative '../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation/ruby_llm/patches/embedding'
 
 # Mock RubyLLM::Embedding if not already defined from chat_test.rb
 unless defined?(RubyLLM::Embedding)
@@ -29,6 +29,22 @@ unless defined?(RubyLLM::Embedding)
     end unless defined?(Config)
 
     class Embedding
+      # Store the base implementation as a constant so we can always reference it
+      BASE_EMBED = lambda do |text, model: nil, provider: nil, assume_model_exists: false, context: nil, dimensions: nil|
+        config = context&.config || RubyLLM.config
+        model ||= config.default_embedding_model
+
+        # Simulate embedding response
+        vector_size = dimensions || 1536
+        vectors = Array.new(vector_size) { rand }
+
+        Embedding.new(
+          vectors: vectors,
+          model: model,
+          input_tokens: text.to_s.split.length
+        )
+      end
+
       attr_reader :vectors, :model, :input_tokens
 
       def initialize(vectors:, model:, input_tokens: 0)
@@ -38,18 +54,7 @@ unless defined?(RubyLLM::Embedding)
       end
 
       def self.embed(text, model: nil, provider: nil, assume_model_exists: false, context: nil, dimensions: nil)
-        config = context&.config || RubyLLM.config
-        model ||= config.default_embedding_model
-
-        # Simulate embedding response
-        vector_size = dimensions || 1536
-        vectors = Array.new(vector_size) { rand }
-
-        new(
-          vectors: vectors,
-          model: model,
-          input_tokens: text.to_s.split.length
-        )
+        BASE_EMBED.call(text, model: model, provider: provider, assume_model_exists: assume_model_exists, context: context, dimensions: dimensions)
       end
     end
   end
@@ -67,10 +72,14 @@ describe OpenTelemetry::Instrumentation::RubyLLM::Patches::Embedding do
     unless RubyLLM::Embedding.singleton_class.ancestors.include?(OpenTelemetry::Instrumentation::RubyLLM::Patches::Embedding)
       RubyLLM::Embedding.singleton_class.prepend(OpenTelemetry::Instrumentation::RubyLLM::Patches::Embedding)
     end
-    instrumentation.instance_variable_set(:@installed, true)
+    # Install instrumentation to populate config with defaults
+    instrumentation.instance_variable_set(:@config, nil)
+    instrumentation.instance_variable_set(:@installed, false)
+    instrumentation.install({})
   end
 
   after do
+    instrumentation.instance_variable_set(:@config, nil)
     instrumentation.instance_variable_set(:@installed, false)
   end
 
@@ -150,22 +159,22 @@ describe OpenTelemetry::Instrumentation::RubyLLM::Patches::Embedding do
 
   describe 'error handling' do
     it 'handles errors and records exception' do
-      # Temporarily make embed raise an error
-      original_method = RubyLLM::Embedding.method(:embed)
-
-      RubyLLM::Embedding.define_singleton_method(:embed) do |*args, **kwargs|
-        # Call patched version which will call super
-        # But we want to raise after the patch runs
-        raise StandardError, 'Embedding API Error'
-      end
+      # Temporarily replace the BASE_EMBED lambda to raise an error
+      original_lambda = RubyLLM::Embedding::BASE_EMBED
+      RubyLLM::Embedding.send(:remove_const, :BASE_EMBED)
+      RubyLLM::Embedding.const_set(:BASE_EMBED, ->(*_args, **_kwargs) { raise StandardError, 'Embedding API Error' })
 
       assert_raises(StandardError) do
         RubyLLM::Embedding.embed('Hello')
       end
 
-      # Restore original - need to re-prepend since we replaced the method
-      RubyLLM::Embedding.singleton_class.send(:define_method, :embed, original_method)
-      RubyLLM::Embedding.singleton_class.prepend(OpenTelemetry::Instrumentation::RubyLLM::Patches::Embedding)
+      # Restore original lambda
+      RubyLLM::Embedding.send(:remove_const, :BASE_EMBED)
+      RubyLLM::Embedding.const_set(:BASE_EMBED, original_lambda)
+
+      # Verify error was recorded in span
+      _(client_span).wont_be_nil
+      _(client_span.status.code).must_equal OpenTelemetry::Trace::Status::ERROR
     end
   end
 

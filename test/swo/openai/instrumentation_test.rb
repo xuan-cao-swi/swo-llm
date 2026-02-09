@@ -6,7 +6,7 @@
 
 require 'test_helper'
 
-require_relative '../../../../lib/opentelemetry/instrumentation/openai'
+require_relative '../../../lib/swo/llm/openai/opentelemetry/instrumentation/openai'
 
 describe OpenTelemetry::Instrumentation::OpenAI do
   let(:instrumentation) { OpenTelemetry::Instrumentation::OpenAI::Instrumentation.instance }

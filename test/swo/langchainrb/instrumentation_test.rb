@@ -6,7 +6,7 @@
 
 require 'test_helper'
 
-require_relative '../../../../lib/opentelemetry/instrumentation/langchainrb'
+require_relative '../../../lib/swo/llm/langchainrb/opentelemetry/instrumentation/langchainrb'
 
 describe OpenTelemetry::Instrumentation::Langchainrb do
   let(:instrumentation) { OpenTelemetry::Instrumentation::Langchainrb::Instrumentation.instance }

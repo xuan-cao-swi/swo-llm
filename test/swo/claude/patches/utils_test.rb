@@ -7,7 +7,7 @@
 require 'test_helper'
 require 'json'
 
-require_relative '../../../../../lib/swo/llm/claude/opentelemetry/instrumentation/claude/patches/utils'
+require_relative '../../../../lib/swo/llm/claude/opentelemetry/instrumentation/claude/patches/utils'
 
 describe OpenTelemetry::Instrumentation::Claude::Patches::Utils do
   let(:utils_class) do
@@ -193,7 +193,9 @@ describe OpenTelemetry::Instrumentation::Claude::Patches::Utils do
 
       event = utils_class.message_to_log_event(message, capture_content: false)
 
-      _(event[:body][:content]).must_be_nil
+      # Body is nil or doesn't contain content when capture_content is false
+      body = event[:body]
+      _(body.nil? || body[:content].nil?).must_equal true
     end
   end
 

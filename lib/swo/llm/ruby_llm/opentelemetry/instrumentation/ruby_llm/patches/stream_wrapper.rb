@@ -79,8 +79,10 @@ module OpenTelemetry
             if response
               @model ||= get_property_value(response, :model_id) || get_property_value(response, :model)
               @response_id ||= get_property_value(response, :id)
-              @input_tokens ||= get_property_value(response, :input_tokens) || 0
-              @output_tokens ||= get_property_value(response, :output_tokens) || 0
+              response_input_tokens = get_property_value(response, :input_tokens)
+              response_output_tokens = get_property_value(response, :output_tokens)
+              @input_tokens = response_input_tokens if response_input_tokens && @input_tokens.zero?
+              @output_tokens = response_output_tokens if response_output_tokens && @output_tokens.zero?
 
               # Check for tool calls in final response
               if response.respond_to?(:tool_call?) && response.tool_call?

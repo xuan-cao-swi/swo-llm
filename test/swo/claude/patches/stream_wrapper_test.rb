@@ -6,8 +6,8 @@
 
 require 'test_helper'
 
-require_relative '../../../../../lib/swo/llm/claude/opentelemetry/instrumentation'
-require_relative '../../../../../lib/swo/llm/claude/opentelemetry/instrumentation/claude/patches/stream_wrapper'
+require_relative '../../../../lib/swo/llm/claude/opentelemetry/instrumentation'
+require_relative '../../../../lib/swo/llm/claude/opentelemetry/instrumentation/claude/patches/stream_wrapper'
 
 describe OpenTelemetry::Instrumentation::Claude::Patches::StreamWrapper do
   let(:instrumentation) { OpenTelemetry::Instrumentation::Claude::Instrumentation.instance }
@@ -80,7 +80,8 @@ describe OpenTelemetry::Instrumentation::Claude::Patches::StreamWrapper do
         _(event[:body][:type]).must_equal 'tool_use'
         _(event[:body][:id]).must_equal 'toolu_123'
         _(event[:body][:name]).must_equal 'get_weather'
-        _(event[:body][:input]).must_equal '{"location":"NYC"}'
+        # Input is parsed as JSON to avoid double-escaping when logged
+        _(event[:body][:input]).must_equal({ 'location' => 'NYC' })
       end
 
       it 'defaults type to text when nil' do

@@ -7,148 +7,149 @@
 require 'test_helper'
 require 'json'
 
-require_relative '../../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation'
-require_relative '../../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation/ruby_llm/patches/chat'
+require_relative '../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation/ruby_llm'
+require_relative '../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation/ruby_llm/patches/chat'
 
-# Mock RubyLLM module and classes for testing without the actual gem
-module RubyLLM
-  VERSION = '1.3.0'
+# Mock RubyLLM module and classes for testing
+# (ruby_llm gem requires Ruby 3.3+ but we're on 3.1.0)
+unless defined?(RubyLLM::Chat)
+  module RubyLLM
+    VERSION = '1.3.0' unless defined?(VERSION)
 
-  def self.config
-    @config ||= Config.new
-  end
-
-  def self.configure
-    yield(config)
-  end
-
-  class Config
-    attr_accessor :default_model, :default_embedding_model, :openai_api_key
-
-    def initialize
-      @default_model = 'gpt-4'
-      @default_embedding_model = 'text-embedding-ada-002'
-    end
-  end
-
-  class Content
-    attr_reader :text, :attachments
-
-    def initialize(text, attachments = nil)
-      @text = text
-      @attachments = attachments
-    end
-  end
-
-  class Message
-    attr_reader :role, :content, :tool_calls, :tool_call_id, :id, :model_id, :input_tokens, :output_tokens
-
-    def initialize(attrs = {})
-      @role = attrs[:role]
-      @content = attrs[:content]
-      @tool_calls = attrs[:tool_calls]
-      @tool_call_id = attrs[:tool_call_id]
-      @id = attrs[:id]
-      @model_id = attrs[:model_id]
-      @input_tokens = attrs[:input_tokens]
-      @output_tokens = attrs[:output_tokens]
+    def self.config
+      @config ||= Config.new
     end
 
-    def tool_call?
-      @tool_calls && !@tool_calls.empty?
-    end
-  end
-
-  class Model
-    attr_reader :id
-
-    def initialize(id)
-      @id = id
-    end
-  end
-
-  class Provider
-    attr_reader :slug
-
-    def initialize(slug)
-      @slug = slug
+    def self.configure
+      yield(config)
     end
 
-    def complete(_messages, tools:, temperature:, model:, params:, headers:, schema:, thinking:, &block)
-      # Simulate response
-      response = Message.new(
-        role: :assistant,
-        content: 'Hello! How can I help you?',
-        id: 'msg_123',
-        model_id: model.id,
-        input_tokens: 10,
-        output_tokens: 15
-      )
+    class Config
+      attr_accessor :default_model, :default_embedding_model, :openai_api_key
 
-      # If streaming, yield chunks then return response
-      if block
-        block.call(Message.new(content: 'Hello'))
-        block.call(Message.new(content: '! How can I help you?'))
+      def initialize
+        @default_model = 'gpt-4'
+        @default_embedding_model = 'text-embedding-ada-002'
+      end
+    end
+
+    class Content
+      attr_reader :text, :attachments
+
+      def initialize(text, attachments = nil)
+        @text = text
+        @attachments = attachments
+      end
+    end
+
+    class Message
+      attr_reader :role, :content, :tool_calls, :tool_call_id, :id, :model_id, :input_tokens, :output_tokens
+
+      def initialize(attrs = {})
+        @role = attrs[:role]
+        @content = attrs[:content]
+        @tool_calls = attrs[:tool_calls]
+        @tool_call_id = attrs[:tool_call_id]
+        @id = attrs[:id]
+        @model_id = attrs[:model_id]
+        @input_tokens = attrs[:input_tokens]
+        @output_tokens = attrs[:output_tokens]
       end
 
-      response
-    end
-  end
-
-  class Chat
-    attr_reader :model, :messages, :tools, :params, :headers, :schema
-
-    def initialize(model: nil, provider: nil, assume_model_exists: false, context: nil)
-      @config = RubyLLM.config
-      @model = Model.new(model || @config.default_model)
-      @provider = Provider.new(provider || 'openai')
-      @temperature = nil
-      @messages = []
-      @tools = {}
-      @params = {}
-      @headers = {}
-      @schema = nil
-      @thinking = nil
-      @on = {}
+      def tool_call?
+        @tool_calls && !@tool_calls.empty?
+      end
     end
 
-    def ask(message = nil, with: nil, &block)
-      add_message role: :user, content: message
-      complete(&block)
+    class Model
+      attr_reader :id
+
+      def initialize(id)
+        @id = id
+      end
     end
 
-    def with_instructions(instructions, replace: false)
-      @messages = @messages.reject { |msg| msg.role == :system } if replace
-      add_message role: :system, content: instructions
-      self
+    class Provider
+      attr_reader :slug
+
+      def initialize(slug)
+        @slug = slug
+      end
+
+      def complete(_messages, tools:, temperature:, model:, params:, headers:, schema:, thinking:, &block)
+        response = Message.new(
+          role: :assistant,
+          content: 'Hello! How can I help you?',
+          id: 'msg_123',
+          model_id: model.id,
+          input_tokens: 10,
+          output_tokens: 15
+        )
+
+        if block
+          block.call(Message.new(content: 'Hello'))
+          block.call(Message.new(content: '! How can I help you?'))
+        end
+
+        response
+      end
     end
 
-    def with_temperature(temperature)
-      @temperature = temperature
-      self
-    end
+    class Chat
+      attr_reader :model, :messages, :tools, :params, :headers, :schema
 
-    def complete(&block)
-      response = @provider.complete(
-        messages,
-        tools: @tools,
-        temperature: @temperature,
-        model: @model,
-        params: @params,
-        headers: @headers,
-        schema: @schema,
-        thinking: @thinking,
-        &block
-      )
+      def initialize(model: nil, provider: nil, assume_model_exists: false, context: nil)
+        @config = RubyLLM.config
+        @model = Model.new(model || @config.default_model)
+        @provider = Provider.new(provider || 'openai')
+        @temperature = nil
+        @messages = []
+        @tools = {}
+        @params = {}
+        @headers = {}
+        @schema = nil
+        @thinking = nil
+        @on = {}
+      end
 
-      add_message response
-      response
-    end
+      def ask(message = nil, with: nil, &block)
+        add_message role: :user, content: message
+        complete(&block)
+      end
 
-    def add_message(message_or_attributes)
-      message = message_or_attributes.is_a?(Message) ? message_or_attributes : Message.new(message_or_attributes)
-      messages << message
-      message
+      def with_instructions(instructions, replace: false)
+        @messages = @messages.reject { |msg| msg.role == :system } if replace
+        add_message role: :system, content: instructions
+        self
+      end
+
+      def with_temperature(temperature)
+        @temperature = temperature
+        self
+      end
+
+      def complete(&block)
+        response = @provider.complete(
+          messages,
+          tools: @tools,
+          temperature: @temperature,
+          model: @model,
+          params: @params,
+          headers: @headers,
+          schema: @schema,
+          thinking: @thinking,
+          &block
+        )
+
+        add_message response
+        response
+      end
+
+      def add_message(message_or_attributes)
+        message = message_or_attributes.is_a?(Message) ? message_or_attributes : Message.new(message_or_attributes)
+        messages << message
+        message
+      end
     end
   end
 end
@@ -165,10 +166,14 @@ describe OpenTelemetry::Instrumentation::RubyLLM::Patches::Chat do
     unless RubyLLM::Chat.ancestors.include?(OpenTelemetry::Instrumentation::RubyLLM::Patches::Chat)
       RubyLLM::Chat.prepend(OpenTelemetry::Instrumentation::RubyLLM::Patches::Chat)
     end
-    instrumentation.instance_variable_set(:@installed, true)
+    # Install instrumentation to populate config with defaults
+    instrumentation.instance_variable_set(:@config, nil)
+    instrumentation.instance_variable_set(:@installed, false)
+    instrumentation.install({})
   end
 
   after do
+    instrumentation.instance_variable_set(:@config, nil)
     instrumentation.instance_variable_set(:@installed, false)
   end
 

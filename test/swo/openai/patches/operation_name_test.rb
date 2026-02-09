@@ -6,7 +6,7 @@
 
 require 'test_helper'
 
-require_relative '../../../../../lib/opentelemetry/instrumentation/openai/patches/operation_name'
+require_relative '../../../../lib/swo/llm/openai/opentelemetry/instrumentation/openai/patches/operation_name'
 
 describe OpenTelemetry::Instrumentation::OpenAI::Patches::OperationName do
   let(:operation_name_module) do

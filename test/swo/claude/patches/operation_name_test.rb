@@ -6,7 +6,7 @@
 
 require 'test_helper'
 
-require_relative '../../../../../lib/swo/llm/claude/opentelemetry/instrumentation/claude/patches/operation_name'
+require_relative '../../../../lib/swo/llm/claude/opentelemetry/instrumentation/claude/patches/operation_name'
 
 describe OpenTelemetry::Instrumentation::Claude::Patches::OperationName do
   let(:operation_name_class) do

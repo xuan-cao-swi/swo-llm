@@ -7,7 +7,7 @@
 require 'test_helper'
 require 'json'
 
-require_relative '../../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation/ruby_llm/patches/utils'
+require_relative '../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation/ruby_llm/patches/utils'
 
 describe OpenTelemetry::Instrumentation::RubyLLM::Patches::Utils do
   let(:utils_class) do

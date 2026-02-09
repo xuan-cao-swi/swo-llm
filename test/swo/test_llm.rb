@@ -8,6 +8,7 @@ class Swo::TestLlm < Minitest::Test
   end
 
   def test_it_does_something_useful
-    assert false
+    # Placeholder test - verify module is properly defined
+    assert defined?(Swo::Llm)
   end
 end

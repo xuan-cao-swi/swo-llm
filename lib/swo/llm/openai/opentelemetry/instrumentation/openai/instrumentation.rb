@@ -32,7 +32,7 @@ module OpenTelemetry
         private
 
         def gem_version
-          ::OpenAI::VERSION
+          Gem::Version.new(::OpenAI::VERSION)
         end
 
         def determine_the_content_mode

@@ -199,31 +199,35 @@ module OpenTelemetry
             return unless span.recording?
 
             response_attributes = {
-              'gen_ai.response.model' => result.respond_to?(:model) ? result.model : nil,
-              'gen_ai.response.id' => result.respond_to?(:id) ? result.id : nil
+              'gen_ai.response.model' => get_property_value(result, :model),
+              'gen_ai.response.id' => get_property_value(result, :id)
             }.compact
             span.add_attributes(response_attributes)
 
             # Handle usage/token information
-            set_usage_attributes(span, result.usage) if result.respond_to?(:usage) && result.usage
+            usage = get_property_value(result, :usage)
+            set_usage_attributes(span, usage) if usage
 
             # Handle stop reason
-            if result.respond_to?(:stop_reason) && result.stop_reason
-              span.set_attribute('gen_ai.response.finish_reasons', [result.stop_reason.to_s])
+            stop_reason = get_property_value(result, :stop_reason)
+            if stop_reason
+              span.set_attribute('gen_ai.response.finish_reasons', [stop_reason.to_s])
             end
 
             # Log response content if capture_content is enabled
             return unless config[:capture_content]
 
-            if result.respond_to?(:content) && result.content
+            content = get_property_value(result, :content)
+            completion = get_property_value(result, :completion)
+            if content
               event = response_to_log_event(result, capture_content: true)
               log_structured_event(event)
-            elsif result.respond_to?(:completion)
+            elsif completion
               # Legacy completions API
               event = {
                 event_name: 'gen_ai.assistant.message',
                 attributes: { 'gen_ai.provider.name' => 'anthropic' },
-                body: { content: result.completion.to_s }
+                body: { content: completion.to_s }
               }
               log_structured_event(event)
             end
@@ -232,8 +236,8 @@ module OpenTelemetry
           # Set token usage attributes
           def set_usage_attributes(span, usage)
             usage_attributes = {
-              'gen_ai.usage.input_tokens' => usage.respond_to?(:input_tokens) ? usage.input_tokens : nil,
-              'gen_ai.usage.output_tokens' => usage.respond_to?(:output_tokens) ? usage.output_tokens : nil
+              'gen_ai.usage.input_tokens' => get_property_value(usage, :input_tokens),
+              'gen_ai.usage.output_tokens' => get_property_value(usage, :output_tokens)
             }.compact
 
             span.add_attributes(usage_attributes)
