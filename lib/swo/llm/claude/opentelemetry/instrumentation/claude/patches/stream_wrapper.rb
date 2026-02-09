@@ -8,9 +8,9 @@ require_relative 'utils'
 
 module OpenTelemetry
   module Instrumentation
-    module Anthropic
+    module Claude
       module Patches
-        # Stream wrapper for Anthropic message streaming
+        # Stream wrapper for Anthropic Claude message streaming
         # Wraps Anthropic::Internal::Stream or Anthropic::Streaming::MessageStream
         class StreamWrapper
           include Enumerable

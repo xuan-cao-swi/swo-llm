@@ -6,12 +6,12 @@
 
 require 'test_helper'
 
-require_relative '../../../../../lib/swo/llm/anthropic/opentelemetry/instrumentation/anthropic/patches/operation_name'
+require_relative '../../../../../lib/swo/llm/claude/opentelemetry/instrumentation/claude/patches/operation_name'
 
-describe OpenTelemetry::Instrumentation::Anthropic::Patches::OperationName do
+describe OpenTelemetry::Instrumentation::Claude::Patches::OperationName do
   let(:operation_name_class) do
     Class.new do
-      include OpenTelemetry::Instrumentation::Anthropic::Patches::OperationName
+      include OpenTelemetry::Instrumentation::Claude::Patches::OperationName
     end.new
   end
 

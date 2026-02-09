@@ -7,12 +7,12 @@
 require 'test_helper'
 require 'json'
 
-require_relative '../../../../../lib/swo/llm/anthropic/opentelemetry/instrumentation/anthropic/patches/utils'
+require_relative '../../../../../lib/swo/llm/claude/opentelemetry/instrumentation/claude/patches/utils'
 
-describe OpenTelemetry::Instrumentation::Anthropic::Patches::Utils do
+describe OpenTelemetry::Instrumentation::Claude::Patches::Utils do
   let(:utils_class) do
     Class.new do
-      include OpenTelemetry::Instrumentation::Anthropic::Patches::Utils
+      include OpenTelemetry::Instrumentation::Claude::Patches::Utils
     end.new
   end
 
@@ -124,13 +124,13 @@ describe OpenTelemetry::Instrumentation::Anthropic::Patches::Utils do
 
   describe '#message_to_log_event' do
     it 'creates event for user message with string content' do
-      message = { role: 'user', content: 'Hello!' }
+      message = { role: 'user', content: 'Hello Claude!' }
 
       event = utils_class.message_to_log_event(message, capture_content: true)
 
       _(event[:event_name]).must_equal 'gen_ai.user.message'
       _(event[:attributes]['gen_ai.provider.name']).must_equal 'anthropic'
-      _(event[:body][:content]).must_equal 'Hello!'
+      _(event[:body][:content]).must_equal 'Hello Claude!'
     end
 
     it 'creates event for user message with array content' do

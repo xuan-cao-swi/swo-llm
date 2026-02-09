@@ -6,8 +6,8 @@
 
 module OpenTelemetry
   module Instrumentation
-    module Anthropic
-      # The Instrumentation class contains logic to detect and install the Anthropic instrumentation
+    module Claude
+      # The Instrumentation class contains logic to detect and install the Anthropic Claude instrumentation
       class Instrumentation < OpenTelemetry::Instrumentation::Base
         MINIMUM_VERSION = Gem::Version.new('1.0.0')
         ALLOWED_OPERATION = %w[messages completions].freeze

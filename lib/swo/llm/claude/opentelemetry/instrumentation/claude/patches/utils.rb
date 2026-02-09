@@ -9,10 +9,10 @@ require 'logger'
 
 module OpenTelemetry
   module Instrumentation
-    module Anthropic
+    module Claude
       module Patches
         # Utils module provides helper methods for extracting and processing
-        # data from Anthropic API requests and responses
+        # data from Anthropic Claude API requests and responses
         module Utils
           def get_property_value(obj, property_name)
             if obj.is_a?(Hash)

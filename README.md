@@ -8,7 +8,7 @@ This gem bundles OpenTelemetry instrumentation for multiple LLM providers:
 
 - **OpenAI** - Instrumentation for OpenAI API calls (GPT models, embeddings, etc.)
 - **Langchain.rb** - Instrumentation for the Langchain Ruby framework
-- **Anthropic** - Instrumentation for Anthropic's API
+- **Anthropic Claude** - Instrumentation for Anthropic's Claude API
 - **RubyLLM** - Instrumentation for the RubyLLM unified LLM interface
 - **Google Gemini** - *(Coming Soon)* Instrumentation for Google's Gemini API
 
@@ -43,7 +43,7 @@ require 'swo/llm'
 This will automatically instrument:
 - OpenAI API calls
 - Langchain.rb operations
-- Anthropic API calls
+- Anthropic Claude API calls
 - RubyLLM chat and embedding operations
 
 The instrumentation will capture:
@@ -88,8 +88,8 @@ require 'swo/llm/openai/opentelemetry-instrumentation-openai'
 # Only Langchain.rb
 require 'swo/llm/langchainrb/opentelemetry-instrumentation-langchainrb'
 
-# Only Anthropic
-require 'swo/llm/anthropic/opentelemetry-instrumentation-anthropic'
+# Only Anthropic Claude
+require 'swo/llm/claude/opentelemetry-instrumentation-claude'
 
 # Only RubyLLM
 require 'swo/llm/ruby_llm/opentelemetry-instrumentation-ruby_llm'

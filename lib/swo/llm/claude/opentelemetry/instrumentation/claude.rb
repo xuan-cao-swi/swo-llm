@@ -9,11 +9,11 @@ require 'opentelemetry-instrumentation-base'
 
 module OpenTelemetry
   module Instrumentation
-    # Contains the OpenTelemetry instrumentation for the Anthropic gem
-    module Anthropic
+    # Contains the OpenTelemetry instrumentation for the Anthropic Claude gem
+    module Claude
     end
   end
 end
 
-require_relative 'anthropic/instrumentation'
-require_relative 'anthropic/version'
+require_relative 'claude/instrumentation'
+require_relative 'claude/version'

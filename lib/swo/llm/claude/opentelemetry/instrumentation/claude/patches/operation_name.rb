@@ -6,9 +6,9 @@
 
 module OpenTelemetry
   module Instrumentation
-    module Anthropic
+    module Claude
       module Patches
-        # Determine the operation name from the request path for Anthropic API
+        # Determine the operation name from the request path for Anthropic Claude API
         module OperationName
           def determine_operation_name(req)
             path = req[:path].to_s

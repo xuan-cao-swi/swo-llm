@@ -6,14 +6,14 @@
 
 require 'test_helper'
 
-require_relative '../../../../../lib/swo/llm/anthropic/opentelemetry/instrumentation'
-require_relative '../../../../../lib/swo/llm/anthropic/opentelemetry/instrumentation/anthropic/patches/stream_wrapper'
+require_relative '../../../../../lib/swo/llm/claude/opentelemetry/instrumentation'
+require_relative '../../../../../lib/swo/llm/claude/opentelemetry/instrumentation/claude/patches/stream_wrapper'
 
-describe OpenTelemetry::Instrumentation::Anthropic::Patches::StreamWrapper do
-  let(:instrumentation) { OpenTelemetry::Instrumentation::Anthropic::Instrumentation.instance }
+describe OpenTelemetry::Instrumentation::Claude::Patches::StreamWrapper do
+  let(:instrumentation) { OpenTelemetry::Instrumentation::Claude::Instrumentation.instance }
 
   describe 'ContentBlockBuffer' do
-    let(:buffer_class) { OpenTelemetry::Instrumentation::Anthropic::Patches::StreamWrapper::ContentBlockBuffer }
+    let(:buffer_class) { OpenTelemetry::Instrumentation::Claude::Patches::StreamWrapper::ContentBlockBuffer }
 
     describe '#initialize' do
       it 'initializes with index' do
@@ -93,7 +93,7 @@ describe OpenTelemetry::Instrumentation::Anthropic::Patches::StreamWrapper do
   end
 
   describe 'StreamWrapper' do
-    let(:wrapper_class) { OpenTelemetry::Instrumentation::Anthropic::Patches::StreamWrapper }
+    let(:wrapper_class) { OpenTelemetry::Instrumentation::Claude::Patches::StreamWrapper }
 
     # Mock span for testing
     let(:mock_span) do

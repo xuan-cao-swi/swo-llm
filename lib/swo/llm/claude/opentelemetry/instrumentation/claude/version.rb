@@ -6,7 +6,7 @@
 
 module OpenTelemetry
   module Instrumentation
-    module Anthropic
+    module Claude
       VERSION = '0.1.0'
     end
   end
