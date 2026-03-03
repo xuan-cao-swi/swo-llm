@@ -6,9 +6,9 @@ OpenTelemetry instrumentation for Large Language Model (LLM) providers. This gem
 
 The Ruby LLM observability ecosystem has several existing solutions, each with meaningful gaps:
 
-- **Official OpenTelemetry Ruby contrib** (e.g., the Anthropic instrumentation in `opentelemetry-ruby-contrib`) focuses primarily on context propagation rather than creating spans with rich telemetry. It does not capture request/response attributes, token usage, streaming, or tool calls.
+- **Official OpenTelemetry Ruby contrib** (e.g., the Anthropic instrumentation in `opentelemetry-ruby-contrib`): `Instrumentation::Anthropic` focuses primarily on context propagation rather than creating spans with rich telemetry. It does not capture request/response attributes, token usage, streaming, or tool calls. `Instrumentation::OpenAI` still under the [review](https://github.com/open-telemetry/opentelemetry-ruby-contrib/pull/1797).
 
-- **Native RubyLLM instrumentation** (by [sinaptia](https://github.com/sinaptia)) is a Rails-only solution built on ActiveSupport notifications. It is not available to non-Rails applications, and the notification payload is unstructured rather than conforming to OTel semantic conventions.
+- **RubyLLM instrumentation in Rails ** (by [sinaptia](https://github.com/sinaptia)) is a third-party Rails-only solution built on ActiveSupport notifications. It is not available to non-Rails applications, and the notification payload is unstructured rather than conforming to OTel semantic conventions.
 
 - **Third-party instrumentations** such as [thoughtbot's `opentelemetry-instrumentation-ruby_llm`](https://rubyllm.com/ecosystem/#opentelemetry-rubyllm-instrumentation) cover basic chat tracing but are missing streaming response instrumentation, embedding instrumentation, and broader LLM capabilities such as image and audio operations.
 
@@ -24,7 +24,7 @@ The Ruby LLM observability ecosystem has several existing solutions, each with m
 This gem bundles OpenTelemetry instrumentation for multiple LLM providers:
 
 - **OpenAI** - Instrumentation for OpenAI API calls (GPT models, embeddings, etc.)
-- **Langchain.rb** - Instrumentation for the Langchain Ruby framework
+- **Langchain.rb** - Instrumentation for the Langchain Ruby framework (legacy support)
 - **Anthropic Claude** - Instrumentation for Anthropic's Claude API
 - **RubyLLM** - Instrumentation for the RubyLLM unified LLM interface
 - **Google Gemini** - *(Coming Soon)* Instrumentation for Google's Gemini API
