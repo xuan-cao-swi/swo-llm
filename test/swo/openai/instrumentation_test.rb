@@ -8,6 +8,14 @@ require 'test_helper'
 
 require_relative '../../../lib/swo/llm/openai/opentelemetry/instrumentation/openai'
 
+# Mock OpenAI module for testing install()
+module OpenAI
+  VERSION = '0.46.0' unless defined?(VERSION)
+
+  class Client
+  end
+end
+
 describe OpenTelemetry::Instrumentation::OpenAI do
   let(:instrumentation) { OpenTelemetry::Instrumentation::OpenAI::Instrumentation.instance }
 

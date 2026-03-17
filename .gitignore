@@ -32,3 +32,4 @@ prompt
 
 # Ruby
 .ruby-version
+Gemfile.lock

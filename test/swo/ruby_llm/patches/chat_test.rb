@@ -11,7 +11,7 @@ require_relative '../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation
 require_relative '../../../../lib/swo/llm/ruby_llm/opentelemetry/instrumentation/ruby_llm/patches/chat'
 
 # Mock RubyLLM module and classes for testing
-# (ruby_llm gem requires Ruby 3.3+ but we're on 3.1.0)
+# (ruby_llm gem requires Ruby 3.3+)
 unless defined?(RubyLLM::Chat)
   module RubyLLM
     VERSION = '1.3.0' unless defined?(VERSION)

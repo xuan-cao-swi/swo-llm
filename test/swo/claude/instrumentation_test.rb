@@ -10,7 +10,7 @@ require_relative '../../../lib/swo/llm/claude/opentelemetry/instrumentation'
 
 # Mock Anthropic module for testing install()
 module Anthropic
-  VERSION = '1.0.0'
+  VERSION = '1.0.0' unless defined?(VERSION)
 
   class Client
     def request(req)
