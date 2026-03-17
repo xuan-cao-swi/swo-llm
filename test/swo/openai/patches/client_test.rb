@@ -14,7 +14,7 @@ require_relative '../../../../lib/swo/llm/openai/opentelemetry/instrumentation/o
 # Define a minimal OpenAI module for the instrumentation's `present` check
 # The instrumentation expects ::OpenAI to be defined with a VERSION constant
 module OpenAI
-  VERSION = '0.46.0'
+  VERSION = '0.46.0' unless defined?(VERSION)
 end
 
 # Mock OpenAI Client that simulates the official SDK's API structure

@@ -14,7 +14,7 @@ require_relative '../../../../lib/swo/llm/claude/opentelemetry/instrumentation/c
 # Define a minimal Anthropic module for the instrumentation's `present` check
 # The instrumentation expects ::Anthropic to be defined with a VERSION constant
 module Anthropic
-  VERSION = '1.0.0'
+  VERSION = '1.0.0' unless defined?(VERSION)
 end
 
 # Mock Anthropic Client that simulates the official SDK's API structure
